@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>OpenHarmony 助手 Demo</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #1e293b 0, #020617 50%, #000 100%);
+      color: #e5e7eb;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: stretch;
+    }
+    .chat-wrapper {
+      width: 100%;
+      max-width: 960px;
+      height: 100vh;
+      padding: 16px;
+      display: flex;
+    }
+    .chat-card {
+      background: rgba(15, 23, 42, 0.9);
+      border-radius: 24px;
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      backdrop-filter: blur(18px);
+    }
+    .chat-header {
+      padding: 14px 20px;
+      border-bottom: 1px solid rgba(30, 64, 175, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: linear-gradient(to right, rgba(15, 118, 110, 0.32), rgba(37, 99, 235, 0.32));
+    }
+    .chat-header-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .chat-header-orb {
+      width: 24px;
+      height: 24px;
+      border-radius: 999px;
+      background: conic-gradient(from 0deg, #22d3ee, #818cf8, #f97316, #22d3ee);
+      position: relative;
+      animation: spin 6s linear infinite;
+    }
+    .chat-header-orb::after {
+      content: "";
+      position: absolute;
+      inset: 3px;
+      border-radius: inherit;
+      background: radial-gradient(circle at 30% 30%, #f9fafb, #312e81);
+    }
+    .chat-header h1 {
+      font-size: 15px;
+      margin: 0;
+    }
+    .chat-header span {
+      font-size: 11px;
+      color: #cbd5f5;
+      opacity: 0.8;
+    }
+
+    .chat-body {
+      flex: 1;
+      padding: 16px 18px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .bubble-row {
+      display: flex;
+      margin-bottom: 4px;
+    }
+    .bubble-row.user {
+      justify-content: flex-end;
+    }
+    .bubble-row.assistant {
+      justify-content: flex-start;
+    }
+
+    .bubble {
+      max-width: 72%;
+      padding: 10px 12px;
+      border-radius: 18px;
+      font-size: 14px;
+      line-height: 1.5;
+      word-wrap: break-word;
+      white-space: pre-wrap;
+    }
+    .bubble.user-bubble {
+      background: linear-gradient(to right, #0ea5e9, #22c55e);
+      color: #0b1120;
+      border-bottom-right-radius: 4px;
+    }
+    .bubble.assistant-bubble {
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      border-bottom-left-radius: 4px;
+    }
+
+    .chat-footer {
+      border-top: 1px solid rgba(51, 65, 85, 0.9);
+      padding: 10px 14px 14px;
+    }
+    .chat-footer form {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .chat-footer-top {
+      display: flex;
+      gap: 8px;
+    }
+    .chat-input {
+      flex: 4;
+      border-radius: 16px;
+      border: 1px solid rgba(75, 85, 99, 0.9);
+      background: rgba(15, 23, 42, 0.9);
+      padding: 8px 10px;
+      color: #e5e7eb;
+      font-size: 14px;
+      resize: none;
+      min-height: 40px;
+      max-height: 80px;
+    }
+    .chat-input:focus {
+      outline: none;
+      border-color: #38bdf8;
+      box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.4);
+    }
+    .chat-context {
+      flex: 3;
+      border-radius: 16px;
+      border: 1px dashed rgba(55, 65, 81, 0.9);
+      background: rgba(15, 23, 42, 0.7);
+      padding: 8px 10px;
+      color: #9ca3af;
+      font-size: 12px;
+      resize: none;
+      min-height: 40px;
+      max-height: 80px;
+    }
+    .chat-footer-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+    .hint {
+      font-size: 11px;
+      color: #9ca3af;
+      opacity: 0.8;
+    }
+    .send-button {
+      padding: 6px 18px;
+      border-radius: 999px;
+      border: none;
+      font-size: 13px;
+      font-weight: 500;
+      color: #0b1120;
+      background: linear-gradient(to right, #22d3ee, #818cf8);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 8px 24px rgba(56, 189, 248, 0.3);
+      transition: transform 0.08s ease, box-shadow 0.08s ease, opacity 0.1s ease;
+    }
+    .send-button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 32px rgba(59, 130, 246, 0.4);
+    }
+    .send-button:active {
+      transform: translateY(0);
+      box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3);
+    }
+    .send-button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    /* ====== “思考中”动画部分 ====== */
+    .thinking-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .thinking-avatar {
+      width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      background: conic-gradient(#22d3ee, #818cf8, #f97316, #22d3ee);
+      position: relative;
+      animation: breathe 1.8s ease-in-out infinite;
+    }
+    .thinking-avatar::after {
+      content: "";
+      position: absolute;
+      inset: 3px;
+      border-radius: inherit;
+      background: radial-gradient(circle at 30% 30%, #e5e7eb, #111827);
+    }
+    .thinking-dots {
+      display: flex;
+      align-items: flex-end;
+      gap: 4px;
+    }
+    .thinking-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: linear-gradient(to bottom right, #38bdf8, #a855f7);
+      opacity: 0.4;
+      animation: thinking-bounce 1.1s infinite;
+    }
+    .thinking-dot:nth-child(2) {
+      animation-delay: 0.16s;
+    }
+    .thinking-dot:nth-child(3) {
+      animation-delay: 0.32s;
+    }
+
+    @keyframes thinking-bounce {
+      0%, 80%, 100% {
+        transform: translateY(0);
+        opacity: 0.4;
+      }
+      40% {
+        transform: translateY(-4px);
+        opacity: 1;
+      }
+    }
+    @keyframes breathe {
+      0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.2);
+      }
+      50% {
+        transform: scale(1.05);
+        box-shadow: 0 0 0 10px rgba(56, 189, 248, 0);
+      }
+    }
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* 自定义滚动条一点点美化 */
+    .chat-body::-webkit-scrollbar {
+      width: 6px;
+    }
+    .chat-body::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .chat-body::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.4);
+      border-radius: 999px;
+    }
+  </style>
+</head>
+<body>
+  <div class="chat-wrapper">
+    <div class="chat-card">
+      <div class="chat-header">
+        <div class="chat-header-title">
+          <div class="chat-header-orb"></div>
+          <div>
+            <h1>OpenHarmony 助手 · 实时对话 Demo</h1>
+            <span>当 LLM 在“思考”时，看看它的脑子在发光 ✨</span>
+          </div>
+        </div>
+      </div>
+      <div class="chat-body" id="chatBody">
+        <!-- 初始欢迎信息 -->
+        <div class="bubble-row assistant">
+          <div class="bubble assistant-bubble">
+            你好，我是 OpenHarmony 相关文档的小助手。<br/>
+            可以问我架构、部件设计、SysCap 等问题，我会一边“思考”一边回答你 😄
+          </div>
+        </div>
+      </div>
+      <div class="chat-footer">
+        <form id="chatForm">
+          <div class="chat-footer-top">
+            <textarea
+              id="queryInput"
+              class="chat-input"
+              placeholder="输入你的问题，例如：请介绍 OpenHarmony 的技术架构，特别是内核层和框架层。"
+            ></textarea>
+            <textarea
+              id="contextInput"
+              class="chat-context"
+              placeholder="可选：填入你检索到的一些 RAG 文本片段（暂时也可以先留空）"
+            ></textarea>
+          </div>
+          <div class="chat-footer-bottom">
+            <div class="hint">回车发送，Shift + 回车换行。</div>
+            <button type="submit" class="send-button" id="sendBtn">
+              <span>发送</span>
+              <span>➤</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = "http://localhost:8000/chat"; // 对上你 FastAPI 的地址
+    const chatBody = document.getElementById("chatBody");
+    const chatForm = document.getElementById("chatForm");
+    const queryInput = document.getElementById("queryInput");
+    const contextInput = document.getElementById("contextInput");
+    const sendBtn = document.getElementById("sendBtn");
+
+    let isWaiting = false;
+    let thinkingBubbleEl = null;
+
+    function appendUserMessage(text) {
+      const row = document.createElement("div");
+      row.className = "bubble-row user";
+
+      const bubble = document.createElement("div");
+      bubble.className = "bubble user-bubble";
+      bubble.textContent = text;
+
+      row.appendChild(bubble);
+      chatBody.appendChild(row);
+      chatBody.scrollTop = chatBody.scrollHeight;
+    }
+
+    function appendThinkingBubble() {
+      const row = document.createElement("div");
+      row.className = "bubble-row assistant";
+
+      const bubble = document.createElement("div");
+      bubble.className = "bubble assistant-bubble";
+
+      const container = document.createElement("div");
+      container.className = "thinking-container";
+
+      const avatar = document.createElement("div");
+      avatar.className = "thinking-avatar";
+
+      const dots = document.createElement("div");
+      dots.className = "thinking-dots";
+
+      for (let i = 0; i < 3; i++) {
+        const dot = document.createElement("div");
+        dot.className = "thinking-dot";
+        dots.appendChild(dot);
+      }
+
+      container.appendChild(avatar);
+      container.appendChild(dots);
+      bubble.appendChild(container);
+      row.appendChild(bubble);
+
+      chatBody.appendChild(row);
+      chatBody.scrollTop = chatBody.scrollHeight;
+
+      thinkingBubbleEl = bubble;
+    }
+
+    function replaceThinkingWithAnswer(html) {
+      if (!thinkingBubbleEl) return;
+      thinkingBubbleEl.innerHTML = html;
+      chatBody.scrollTop = chatBody.scrollHeight;
+      thinkingBubbleEl = null;
+    }
+
+    async function sendMessage(query, ragContext) {
+      if (!query.trim() || isWaiting) return;
+
+      isWaiting = true;
+      sendBtn.disabled = true;
+
+      appendUserMessage(query);
+      appendThinkingBubble();
+
+      try {
+        const res = await fetch(API_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            query: query,
+            rag_context: ragContext || "",
+          }),
+        });
+
+        if (!res.ok) {
+          throw new Error("HTTP " + res.status);
+        }
+
+        const data = await res.json();
+        replaceThinkingWithAnswer(data.html || "（空响应）");
+      } catch (err) {
+        console.error(err);
+        replaceThinkingWithAnswer("抱歉，我这边出了一点错误，请稍后再试。");
+      } finally {
+        isWaiting = false;
+        sendBtn.disabled = false;
+      }
+    }
+
+    chatForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const query = queryInput.value.trim();
+      const ctx = contextInput.value.trim();
+      if (!query) return;
+
+      sendMessage(query, ctx);
+      queryInput.value = "";
+    });
+
+    // 回车发送，Shift + 回车换行
+    queryInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        chatForm.requestSubmit();
+      }
+    });
+  </script>
+</body>
+</html>

@@ -18,7 +18,8 @@ MODEL_NAME = 'qwen3-coder' # 使用 translate.py 中的模型
 
 async def get_system_prompt():
     """读取自定义的 OpenHarmony System Prompt"""
-    prompt_path = os.path.join(os.path.dirname(__file__), 'ours/openharmony_prompt.md')
+    # prompt_path = os.path.join(os.path.dirname(__file__), 'ours/openharmony_prompt.md')
+    prompt_path = os.path.join(os.path.dirname(__file__), 'ours/step2_system_prompt_zh.md')
     with open(prompt_path, 'r', encoding='utf-8') as f:
         return f.read()
 
