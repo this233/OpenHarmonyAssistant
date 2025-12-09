@@ -1,0 +1,213 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>OpenHarmony 开发语言：ArkTS 详解</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <style>
+    :root {
+      --openharmony-blue: #007DFF;
+      --openharmony-cyan: #00D8FF;
+      --openharmony-violet: #8A2BE2;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f1f5f9;
+    }
+    code {
+      font-family: 'Fira Code', monospace;
+    }
+    .glass-card {
+      background: rgba(30, 41, 59, 0.6);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .glow {
+      box-shadow: 0 0 15px rgba(0, 125, 255, 0.5);
+    }
+    .feature-icon {
+      transition: transform 0.3s ease;
+    }
+    .feature-icon:hover {
+      transform: scale(1.2);
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+      animation: fadeIn 0.5s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+  </style>
+</head>
+<body class="min-h-screen p-6">
+
+  <!-- Header -->
+  <header class="text-center mb-12">
+    <h1 class="text-4xl font-bold mb-4">OpenHarmony 开发语言详解</h1>
+    <p class="text-xl text-cyan-300">ArkTS —— 基于 TypeScript 生态的高性能扩展语言</p>
+  </header>
+
+  <!-- Hero Image Section -->
+  <section class="mb-16 text-center">
+    <div class="glass-card rounded-xl p-6 inline-block max-w-4xl mx-auto">
+      <img src="https://gitee.com/openharmony/docs/raw/master/zh-cn/application-dev/quick-start/figures/arkts.png" alt="ArkTS 技术演进路线图" class="rounded-lg w-full shadow-lg mb-4">
+      <p class="text-sm text-gray-400">ArkTS 在不同 API 版本中的特性演进</p>
+      <a href="https://gitee.com/openharmony/docs/raw/master/zh-cn/application-dev/quick-start/arkts-get-started.md" target="_blank" class="text-cyan-400 hover:underline text-sm flex items-center justify-center mt-2">
+        <i class="ph ph-link text-lg mr-1"></i> 查看原始文档 (定位: 1 初识ArkTS语言)
+      </a>
+    </div>
+  </section>
+
+  <!-- Tabs Navigation -->
+  <div class="flex justify-center mb-8">
+    <div class="flex space-x-2 bg-slate-800 p-1 rounded-full">
+      <button class="tab-btn px-6 py-2 rounded-full transition-all duration-300 bg-slate-700 text-white" data-tab="overview">ArkTS 简介</button>
+      <button class="tab-btn px-6 py-2 rounded-full transition-all duration-300" data-tab="features">技术特点</button>
+      <button class="tab-btn px-6 py-2 rounded-full transition-all duration-300" data-tab="compatibility">兼容性</button>
+    </div>
+  </div>
+
+  <!-- Tab Content -->
+  <main class="max-w-6xl mx-auto">
+
+    <!-- Tab 1: ArkTS 简介 -->
+    <section id="overview" class="tab-content active">
+      <div class="glass-card rounded-xl p-8 mb-8 glow">
+        <h2 class="text-2xl font-bold mb-4 flex items-center">
+          <i class="ph ph-rocket-launch text-cyan-400 mr-2"></i> ArkTS 简介
+        </h2>
+        <p class="mb-4">ArkTS 是 OpenHarmony 应用开发的官方高级语言，也是默认开发语言。它基于 TypeScript 生态，扩展了静态检查、性能优化和并发能力。</p>
+        <ul class="list-disc pl-6 space-y-2">
+          <li>基于 TypeScript 生态，支持与 TS/JS 高效互操作</li>
+          <li>强化静态检查，提升代码健壮性</li>
+          <li>优化程序执行稳定性和性能</li>
+          <li>提供增强的基础类库和并发编程能力</li>
+        </ul>
+        <a href="https://gitee.com/openharmony/docs/raw/master/zh-cn/application-dev/arkts-utils/arkts-overview.md" target="_blank" class="text-cyan-400 hover:underline text-sm flex items-center mt-4">
+          <i class="ph ph-link text-lg mr-1"></i> 查看原始文档 (定位: 1 ArkTS简介)
+        </a>
+      </div>
+    </section>
+
+    <!-- Tab 2: 技术特点 -->
+    <section id="features" class="tab-content">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div class="glass-card rounded-xl p-6 hover:glow transition-all">
+          <h3 class="text-xl font-semibold mb-3 flex items-center">
+            <i class="ph ph-code text-violet-400 mr-2"></i> 静态类型与性能
+          </h3>
+          <ul class="space-y-2 text-sm">
+            <li>✅ 强制使用静态类型，减少运行时检查</li>
+            <li>🚫 禁止运行时改变对象布局</li>
+            <li>🔧 限制部分运算符语义以优化性能</li>
+          </ul>
+        </div>
+        <div class="glass-card rounded-xl p-6 hover:glow transition-all">
+          <h3 class="text-xl font-semibold mb-3 flex items-center">
+            <i class="ph ph-cpu text-blue-400 mr-2"></i> 并发能力增强
+          </h3>
+          <ul class="space-y-2 text-sm">
+            <li>⚡ 提供 TaskPool 和 Worker 两种并发 API</li>
+            <li>🔄 引入 Sendable 概念，优化对象传递性能</li>
+          </ul>
+        </div>
+      </div>
+      <div class="glass-card rounded-xl p-6 mb-8">
+        <h3 class="text-xl font-semibold mb-3 flex items-center">
+          <i class="ph ph-gear text-cyan-400 mr-2"></i> 编译与运行
+        </h3>
+        <p>方舟编译运行时（ArkCompiler）支持 ArkTS、TS 和 JS 的编译运行：</p>
+        <ul class="list-disc pl-6 mt-2 text-sm">
+          <li>🔧 编译工具链：将 ArkTS 编译为方舟字节码（*.abc）</li>
+          <li>🚀 运行时：在设备上执行字节码文件</li>
+        </ul>
+        <a href="https://gitee.com/openharmony/docs/raw/master/zh-cn/application-dev/arkts-utils/arkts-overview.md" target="_blank" class="text-cyan-400 hover:underline text-sm flex items-center mt-4">
+          <i class="ph ph-link text-lg mr-1"></i> 查看原始文档 (定位: 1 ArkTS简介)
+        </a>
+      </div>
+    </section>
+
+    <!-- Tab 3: 兼容性 -->
+    <section id="compatibility" class="tab-content">
+      <div class="glass-card rounded-xl p-8 mb-8 glow">
+        <h2 class="text-2xl font-bold mb-4 flex items-center">
+          <i class="ph ph-plug text-green-400 mr-2"></i> 与 TypeScript/JavaScript 的兼容性
+        </h2>
+        <p class="mb-4">ArkTS 兼容 TS/JS 生态，开发者可平滑过渡并复用已有代码。</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <h3 class="font-semibold mb-2">✅ 支持</h3>
+            <ul class="list-disc pl-6 space-y-1 text-sm">
+              <li>ECMA2017 及更高版本语法</li>
+              <li>与 TS/JS 高效互操作</li>
+              <li>模块间 export/import 使用</li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="font-semibold mb-2">🚫 限制</h3>
+            <ul class="list-disc pl- 6 space-y-1 text-sm">
+              <li>强制使用严格模式 (`use strict`)</li>
+              <li>禁止使用 `eval()` 和 `with()`</li>
+              <li>禁止字符串创建函数和循环依赖</li>
+            </ul>
+          </div>
+        </div>
+        <a href="https://gitee.com/openharmony/docs/raw/master/zh-cn/application-dev/quick-start/arkts-migration-background.md" target="_blank" class="text-cyan-400 hover:underline text-sm flex items-center mt-4">
+          <i class="ph ph-link text-lg mr-1"></i> 查看原始文档 (定位: 1 ArkTS语法适配背景 > 1.5 方舟运行时兼容TS/JS)
+        </a>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- References Section -->
+  <footer class="max-w-6xl mx-auto mt-16 pt-8 border-t border-white/10">
+    <h3 class="text-xl font-bold mb-4">参考资料</h3>
+    <ul class="space-y-2 text-sm">
+      <li>
+        <a href="https://gitee.com/openharmony/docs/raw/master/zh-cn/application-dev/arkts-utils/arkts-overview.md" target="_blank" class="text-cyan-400 hover:underline flex items-center">
+          <i class="ph ph-file-text mr-2"></i> ArkTS 概述文档 (定位: 1 ArkTS简介)
+        </a>
+      </li>
+      <li>
+        <a href="https://gitee.com/openharmony/docs/raw/master/zh-cn/application-dev/quick-start/arkts-get-started.md" target="_blank" class="text-cyan-400 hover:underline flex items-center">
+          <i class="ph ph-file-text mr-2"></i> 初识 ArkTS 语言 (定位: 1 初识ArkTS语言)
+        </a>
+      </li>
+      <li>
+        <a href="https://gitee.com/openharmony/docs/raw/master/zh-cn/application-dev/quick-start/arkts-migration-background.md" target="_blank" class="text-cyan-400 hover:underline flex items-center">
+          <i class="ph ph-file-text mr-2"></i> ArkTS 语法适配背景 (定位: 1 ArkTS语法适配背景 > 1.5 方舟运行时兼容TS/JS)
+        </a>
+      </li>
+    </ul>
+  </footer>
+
+  <script>
+    document.querySelectorAll('.tab-btn').forEach(button => {
+      button.addEventListener('click', () => {
+        // Remove active class from all buttons and contents
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('bg-slate-700'));
+        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+        // Add active class to clicked button
+        button.classList.add('bg-slate-700');
+
+        // Show corresponding content
+        const tabId = button.getAttribute('data-tab');
+        document.getElementById(tabId).classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>
+```
